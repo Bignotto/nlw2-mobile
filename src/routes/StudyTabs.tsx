@@ -58,7 +58,7 @@ const StudyTabs: React.FC = () => {
         name="Favorites"
         component={Favorites}
         options={{
-          tabBarLabel: "Proffys",
+          tabBarLabel: "Mais queridos",
           tabBarIcon: ({ color, size, focused }) => {
             return (
               <Ionicons
