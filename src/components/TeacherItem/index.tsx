@@ -36,7 +36,6 @@ const TeacherItem: React.FC = () => {
         </Text>
         <View style={styles.buttonsContainer}>
           <RectButton style={[styles.favoriteButton, styles.favorite]}>
-            {/* <Image source={favoriteIcon} /> */}
             <Image source={unfavoriteIcon} />
           </RectButton>
           <RectButton style={styles.contactButton}>
