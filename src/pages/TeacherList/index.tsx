@@ -23,7 +23,7 @@ const TeacherList: React.FC = () => {
   const [week_day, setWeek_day] = useState("");
   const [time, setTime] = useState("");
 
-  useEffect(() => {
+  function loadFavorites() {
     AsyncStorage.getItem("favorites").then(response => {
       if (response) {
         const favTeachers = JSON.parse(response);
@@ -31,13 +31,14 @@ const TeacherList: React.FC = () => {
         setFavorites(favIds);
       }
     });
-  }, []);
+  }
 
   function handleShowFilter() {
     setIsFilterVisible(!isFiltersVisible);
   }
 
   async function handleFiltersSubmit() {
+    loadFavorites();
     const response = await api.get("classes", {
       params: {
         subject,
