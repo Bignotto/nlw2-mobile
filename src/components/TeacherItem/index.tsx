@@ -1,5 +1,5 @@
-import React from "react";
-import { View, Image, Text, Linking } from "react-native";
+import React, { useState } from "react";
+import { View, Image, Text, Linking, AsyncStorage } from "react-native";
 
 import styles from "./styles";
 import { RectButton } from "react-native-gesture-handler";
@@ -20,12 +20,37 @@ export interface Teacher {
 
 interface TeacherItemProps {
   teacher: Teacher;
+  favorited: boolean;
 }
 
-const TeacherItem: React.FC<TeacherItemProps> = ({ teacher }) => {
+const TeacherItem: React.FC<TeacherItemProps> = ({ teacher, favorited }) => {
+  const [isFavorited, setIsFavorited] = useState(favorited);
+
   function handleWhatsappContact() {
-    Linking.openURL(`whatsapp://send?phone=${teacher.whatsapp}`);
+    Linking.openURL(`whatsapp://send?phone=+55${teacher.whatsapp}`);
   }
+
+  async function handleToggleFavorite() {
+    const favorites = await AsyncStorage.getItem("favorites");
+
+    let favoritesArray = [];
+    if (favorites) {
+      favoritesArray = JSON.parse(favorites);
+    }
+
+    if (isFavorited) {
+      const favIndex = favoritesArray.findIndex((item: Teacher) => {
+        return (item.id = teacher.id);
+      });
+      favoritesArray.splice(favIndex, 1);
+      setIsFavorited(false);
+    } else {
+      setIsFavorited(true);
+      favoritesArray.push(teacher);
+      await AsyncStorage.setItem("favorites", JSON.stringify(favoritesArray));
+    }
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.profile}>
@@ -47,8 +72,15 @@ const TeacherItem: React.FC<TeacherItemProps> = ({ teacher }) => {
           <Text style={styles.priceValue}>{teacher.cost}</Text>
         </Text>
         <View style={styles.buttonsContainer}>
-          <RectButton style={[styles.favoriteButton, styles.favorite]}>
-            <Image source={unfavoriteIcon} />
+          <RectButton
+            onPress={handleToggleFavorite}
+            style={[styles.favoriteButton, isFavorited ? styles.favorite : {}]}
+          >
+            {isFavorited ? (
+              <Image source={unfavoriteIcon} />
+            ) : (
+              <Image source={favoriteIcon} />
+            )}
           </RectButton>
           <RectButton
             style={styles.contactButton}
